@@ -150,10 +150,10 @@ uint8_t DisplayToolbox::getPixel(int x, int y, bool fromShadow)
 uint8_t DisplayToolbox::calcDispNum(int& x)
 {
   int dispNum = 0;
-  if(x > 23)
+  if(x >= disp->getDisplayWidth())
   {
-    dispNum = x / 24;
-    x -= (24 * dispNum);
+    dispNum = x / disp->getDisplayWidth();
+    x -= (disp->getDisplayWidth() * dispNum);
   }
   return dispNum;
 }
@@ -161,4 +161,15 @@ uint8_t DisplayToolbox::calcDispNum(int& x)
 void DisplayToolbox::setBrightness(uint8_t pwmValue)
 {
 	for(int dispNum=0; dispNum<disp->getDisplayCount(); ++dispNum) disp->setBrightness(dispNum, pwmValue); 
+}
+
+
+
+void DisplayToolbox::drawRectangle(uint8_t _x, uint8_t _y, uint8_t width, uint8_t height, uint8_t colour, bool filled)
+{
+	drawLine(_x, _y, _x, _y+height, colour); // Left side of box
+	drawLine(_x+width, _y, _x+width, _y+height, colour); // Right side of box
+	
+	drawLine(_x, _y, _x+width, _y, colour); // top of box
+	drawLine(_x, _y+height, _x+width, _y+height, colour); // bottom of box
 }

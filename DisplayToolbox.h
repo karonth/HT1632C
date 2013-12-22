@@ -41,7 +41,7 @@ class DisplayToolbox
 private:
 	MatrixDisplay* disp;
 	uint8_t calcDispNum(int& x);
-	
+
 	
 public:	
 	// Constructor
@@ -56,6 +56,8 @@ public:
 	void setPixel(int x, int y, int val, bool paint = false);
 	uint8_t getPixel(int x, int y, bool fromShadow);
 	void setBrightness(uint8_t pwmValue);
+	void drawRectangle(uint8_t _x, uint8_t _y, uint8_t width, uint8_t height, uint8_t colour, bool filled = false);
+	//void drawFilledRectangle(int, int, int, int, int);
 };
 
 #endif

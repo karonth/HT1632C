@@ -45,7 +45,7 @@ PORTC &= ~(1 << (_pin -14) ))
 #include "MatrixDisplay.h"
 
 #define NULL                0
-#define BACKBUFFER_SIZE     48
+#define BACKBUFFER_SIZE     32
 
 #define DIRTY_BIT           0x80
 
@@ -63,7 +63,7 @@ MatrixDisplay::MatrixDisplay(uint8_t numDisplays, uint8_t clkPin, uint8_t dataPi
 	, backBufferSize(sizeof(uint8_t) * BACKBUFFER_SIZE)
 {
     // allocate RAM buffer for display bits
-    // 24 columns * 16 rows / 8 bits = 48 bytes
+    // 32 columns * 8 rows / 8 bits = 32 bytes
     uint8_t sz = displayCount * backBufferSize;
     pDisplayBuffers = (uint8_t *)malloc(sz);
     memset(pDisplayBuffers, 0, sz); 
@@ -125,13 +125,18 @@ void MatrixDisplay::initDisplay(uint8_t displayNum, uint8_t pin, bool master)
 	// Send Precommand
 	preCommand();
 	// Take advantage of successive mode and write the options
-	writeDataBE(8,HT1632_CMD_SYSDIS, true);
-	//sendOptionCommand(HT1632_CMD_MSTMD);
-	writeDataBE(8,HT1632_CMD_SYSON,true);
-	writeDataBE(8,HT1632_CMD_COMS11,true);
-	writeDataBE(8,HT1632_CMD_LEDON,true);
-	writeDataBE(8,HT1632_CMD_BLOFF,true);
-	writeDataBE(8,HT1632_CMD_PWM+15,true);
+	writeDataBE(8,HT1632_CMD_SYSDIS,true);   // Disable system
+	writeDataBE(8,HT1632_CMD_COMS00,true);   // N-MOS, Common 8
+	if(master){                              // First driver is master
+	writeDataBE(8,HT1632_CMD_MSTMD,true);    // Master Mode (default in HT1632C)
+	}else{
+	writeDataBE(8,HT1632_CMD_SLVMD,true);    // Slave Mode
+	}  //*/
+	//writeDataBE(8,HT1632_CMD_RCCLK,true);  // Internal Oscillator
+	writeDataBE(8,HT1632_CMD_SYSON,true);    // System on
+	writeDataBE(8,HT1632_CMD_LEDON,true);    // LEDs on
+	writeDataBE(8,HT1632_CMD_BLOFF,true);    // Blink Off
+	writeDataBE(8,HT1632_CMD_PWM+15,true);   // PWM level 15
 	releaseDisplay(displayNum);
 	clear(displayNum,true);
 }
@@ -203,7 +208,7 @@ void MatrixDisplay::setPixel(uint8_t displayNum, uint8_t x, uint8_t y, uint8_t v
 	}else{
 		uint8_t dispAddress = displayXYToIndex(x, y);
 	    uint8_t value = pDisplayBuffers[address];
-		if(((y >> 2)&1)) // Devide y by 4. Work out whether it's odd or even. 8 pixels packed into 1 byte. 16 pixels are in two bytes. We need to figure out whether to shift the buffer
+		if(y>=4) // Devide y by 4. Work out whether it's odd or even. 8 pixels packed into 1 byte. 16 pixels are in two bytes. We need to figure out whether to shift the buffer
 		{
 			value = pDisplayBuffers[address]  >> 4;
 		}
@@ -309,9 +314,9 @@ void MatrixDisplay::clear(bool paint, bool useShadow)
 		writeDataBE(3, HT1632_ID_WR); // Send "write to display" command
 		writeDataBE(7, 0); // Send initial address (aka 0)
 			
-		for(uint8_t i = 0; i<48; ++i)
+		for(uint8_t i = 0; i<32; ++i)
 		{
-			writeDataLE(8,0); // Write nada
+			writeDataLE(4,0xff); // Write nada
 		}
 	
 		for(int8_t i=0; i<displayCount; ++i) releaseDisplay(i); // Disable all displays
@@ -325,21 +330,19 @@ void MatrixDisplay::clear(bool paint, bool useShadow)
 inline uint8_t MatrixDisplay::xyToIndex(uint8_t x, uint8_t y)
 {
 
-    // cap X coordinate at 24th column
-    x = x > 23 ? 23 : x;
-    // cap Y coordinate at 16
-    y &= 0xF;
+    // cap X coordinate at 32 column
+    x &= 0x1F;
+    // cap Y coordinate at 8
+   // y &= 0x7;
 	
 	
-	uint8_t addresss = y > 7 ? 1 : 0; // Work out which panel it's on (top:0, bottom:1)
-    addresss += x<<1; // Shift x by 1 and add which panel it's on
-    return addresss;
+	return x; // (64 *4) packed into 8 bits = 32.. 32 columns. 32 indices.. return x
 }
 
 inline uint8_t MatrixDisplay::displayXYToIndex(uint8_t x, uint8_t y)
 {
-	uint8_t addresss = y == 0 ? 0 : (y / 4); // Calculate which quandrant[?] it's in 
-	addresss += x << 2; // Shift x by 2 and add which panel it's on
+	uint8_t addresss = x << 1; // Calculate which quandrant[?] it's in 
+	addresss += y >=4 ? 1 : 0;
 	return addresss;
 }
 
@@ -439,90 +442,15 @@ void MatrixDisplay::preCommand()
 
 void MatrixDisplay::bitBlast(uint8_t pin, uint8_t data)
 {
-#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
-    switch (pin) {
-        case 0: PORTE &= ~0x01;
-                PORTE |= (data & 0x01);
-                break;
-        case 1: PORTE &= ~0x02;
-                PORTE |= (data & 0x01) << 1;
-                break;
-        case 2: PORTE &= ~0x10;
-                PORTE |= (data & 0x01) << 4;
-                break;
-        case 3: PORTE &= ~0x20;
-                PORTE |= (data & 0x01) << 5;
-                break;
-        case 4: PORTG &= ~0x20;
-                PORTG |= (data & 0x01) << 5;
-                break;
-        case 5: PORTE &= ~0x08;
-                PORTE |= (data & 0x01) << 3;
-                break;
-        case 6: PORTH &= ~0x08;
-                PORTH |= (data & 0x01) << 3;
-                break;
-        case 7: PORTH &= ~0x10;
-                PORTH |= (data & 0x01) << 4;
-                break;
-        case 8: PORTH &= ~0x20;
-                PORTH |= (data & 0x01) << 5;
-                break;
-        case 9: PORTH &= ~0x40;
-                PORTH |= (data & 0x01) << 6;
-                break;
-        case 10: PORTB &= ~0x10;
-                PORTB |= (data & 0x01) << 4;
-                break;
-        case 11: PORTB &= ~0x20;
-                PORTB |= (data & 0x01) << 5;
-                break;
-        case 12: PORTB &= ~0x40;
-                PORTB |= (data & 0x01) << 6;
-                break;
-        case 13: PORTB &= ~0x80;
-                PORTB |= (data & 0x01) << 7;
-                break;
-        case 14: PORTJ &= ~0x02;
-                PORTJ |= (data & 0x01) << 1;
-                break;
-        case 15: PORTJ &= ~0x01;
-                PORTJ |= (data & 0x01);
-                break;
-        case 16: PORTH &= ~0x02;
-                PORTH |= (data & 0x01) << 1;
-                break;
-        case 17: PORTH &= ~0x01;
-                PORTH |= (data & 0x01);
-                break;
-        case 18: PORTD &= ~0x08;
-                PORTD |= (data & 0x01) << 3;
-                break;
-        case 19: PORTD &= ~0x04;
-                PORTD |= (data & 0x01) << 2;
-                break;
-        case 20: PORTD &= ~0x02;
-                PORTD |= (data & 0x01) << 1;
-                break;
-        case 21: PORTD &= ~0x01;
-                PORTD |= (data & 0x01);
-                break;
-        /*
-        If you want to use the pins 22 - 53 lookup the PORTx in the Arduino Mega pinmap and insert a matching case statement
-        */
+    // TODO: Only supports 328
+    if(pin < 14)
+    {
+        fWriteA(pin, data);
     }
-#else
-    if (pin < 8) {
-        PORTD &= ~(1 << pin );
-        PORTD |= (data & 0x01) << pin; 
-    } else if (pin < 14) {
-        PORTB &= ~(1 << (pin - 8) );
-        PORTB |= (data & 0x01) << (pin - 8); 
-    } else {
-        PORTC &= ~(1 << (pin - 14) );
-        PORTC |= (data & 0x01) << (pin - 14); 
+    else
+    {
+        fWriteB(pin, data);
     }
-#endif
 }
 
 
@@ -533,12 +461,12 @@ uint8_t MatrixDisplay::getDisplayCount()
 
 uint8_t MatrixDisplay::getDisplayHeight()
 {
-	return 16;
+	return 8;
 }
 
 uint8_t MatrixDisplay::getDisplayWidth()
 {
-	return 24;
+	return 32;
 }
 
 // Copy from the display buffer to the shadow buffer (takes a snapshot)

@@ -20,7 +20,7 @@
 */
 
 /*
-This module contains the various command codes required to control the LT1632 chip
+This module contains the various command codes required to control the HT1632 chip
 
 */
 
@@ -28,27 +28,25 @@ This module contains the various command codes required to control the LT1632 ch
 #define H1632_CMD_GUARD
 
 /*
-	All the various commands
+	All the various commands for HT1623C
 */
 #define HT1632_ID_CMD 4		/* ID = 100 - Commands */
 #define HT1632_ID_RD  6		/* ID = 110 - Read RAM */
 #define HT1632_ID_WR  5		/* ID = 101 - Write RAM */
 
-#define HT1632_CMD_SYSDIS 0x00	/* CMD= 0000-0000-x Turn off oscil */
+#define HT1632_CMD_SYSDIS 0x00	/* CMD= 0000-0000-x Turn off oscil - DEFAULT */
 #define HT1632_CMD_SYSON  0x01	/* CMD= 0000-0001-x Enable system oscil */
-#define HT1632_CMD_LEDOFF 0x02	/* CMD= 0000-0010-x LED duty cycle gen off */
+#define HT1632_CMD_LEDOFF 0x02	/* CMD= 0000-0010-x LED duty cycle gen off - DEFAULT */
 #define HT1632_CMD_LEDON  0x03	/* CMD= 0000-0011-x LEDs ON */
 #define HT1632_CMD_BLOFF  0x08	/* CMD= 0000-1000-x Blink OFF */
 #define HT1632_CMD_BLON   0x09	/* CMD= 0000-1001-x Blink On */
-#define HT1632_CMD_SLVMD  0x10	/* CMD= 0001-00xx-x Slave Mode */
-#define HT1632_CMD_MSTMD  0x14	/* CMD= 0001-01xx-x Master Mode */
-#define HT1632_CMD_RCCLK  0x18	/* CMD= 0001-10xx-x Use on-chip clock */
-#define HT1632_CMD_EXTCLK 0x1C	/* CMD= 0001-11xx-x Use external clock */
-#define HT1632_CMD_COMS00 0x20	/* CMD= 0010-ABxx-x commons options */
-#define HT1632_CMD_COMS01 0x24	/* CMD= 0010-ABxx-x commons options */
-#define HT1632_CMD_COMS10 0x28	/* CMD= 0010-ABxx-x commons options */
-#define HT1632_CMD_COMS11 0x2C	//P-MOS OUTPUT AND 16COMMON OPTION
- /* CMD= 0010-ABxx-x commons options */
+#define HT1632_CMD_SLVMD  0x10	/* CMD= 0001-00xx-x Slave Mode - external clock & sync */
+#define HT1632_CMD_MSTMD  0x18	/* CMD= 0001-10xx-x Master Mode - on-chip clock & sync - DEFAULT */
+#define HT1632_CMD_EXTCLK 0x1C	/* CMD= 0001-11xx-x Use external clock only */
+#define HT1632_CMD_COMS00 0x20	/* CMD= 0010-ABxx-x AB=00: N-MOS  8-COMMON - DEFAULT */
+#define HT1632_CMD_COMS01 0x24	/* CMD= 0010-ABxx-x AB=01: N-MOS 16-COMMON */
+#define HT1632_CMD_COMS10 0x28	/* CMD= 0010-ABxx-x AB=10: P-MOS  8-COMMON */
+#define HT1632_CMD_COMS11 0x2C	/* CMD= 0010-ABxx-x AB=11: P-MOS 16-COMMON */
 #define HT1632_CMD_PWM    0xA0	/* CMD= 101x-PPPP-x PWM duty cycle */
 
 #endif
