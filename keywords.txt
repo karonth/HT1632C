@@ -32,6 +32,10 @@ shiftLeft	KEYWORD2
 shiftRight	KEYWORD2
 setBrightness	KEYWORD2
 
+drawCircle	KEYWORD2
+drawLine	KEYWORD2
+drawRectangle	KEYWORD2
+
 #######################################
 # Constants (LITERAL1)
 #######################################
