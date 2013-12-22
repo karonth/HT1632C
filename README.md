@@ -1,6 +1,8 @@
-HT1632
-======
+HT1632C
+=======
 
-The reasonably low cost Sure Electronics 2416 has the simple HT1632 controller. This panel has one defining benefit aside from cost, you can cascade up to 4 panels to create all kinds of effects.
+Arduino library for the HT1632C. This chip is used to drive the Sure3208, a 32x8 LED display matrix as well as other similar panels.
 
-See http://www.milesburton.com/HT1632_Arduino_%22Matrix_Display%22_Library_for_the_Sure_2416_and_0832 for more details
+The base for this library was taken from the 8x32 version of Miles Burton's HT1632 library, http://download.milesburton.com/Arduino/Sure2416/MatrixDisplay_201B_0832Version.zip and adapted for use with the HT1632C driver and Arduino 1.0
+
+The original repository can be found here https://github.com/milesburton/HT1632
