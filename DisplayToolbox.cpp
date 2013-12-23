@@ -20,6 +20,8 @@
 
 
 #include <DisplayToolbox.h>
+#include "font.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 //  CTORS & DTOR
 //
@@ -28,6 +30,8 @@
 	{
 		// Take reference to display
 		disp = _disp;
+		// Set the default font
+		setFont(FONT_5x7W);
 	}
 
 	DisplayToolbox::~DisplayToolbox()
@@ -171,4 +175,229 @@ void DisplayToolbox::drawRectangle(uint8_t _x, uint8_t _y, uint8_t width, uint8_
 	
 	drawLine(_x, _y, _x+width, _y, colour); // top of box
 	drawLine(_x, _y+height, _x+width, _y+height, colour); // bottom of box
+}
+
+
+// Choose/change font to use (for next drawChar)
+// This corresponds to the list of fonts in font.h
+void DisplayToolbox::setFont(uint8_t userfont)
+{
+  switch(userfont) {
+
+#ifdef FONT_4x6
+    case FONT_4x6:
+	font = (uint8_t *) &font_4x6[0];
+	font_width = 4;
+	font_height = 6;
+	break;
+#endif
+#ifdef FONT_5x7
+    case FONT_5x7:
+	font = (uint8_t *) &font_5x7[0];
+	font_width = 5;
+	font_height = 7;
+	break;
+#endif
+#ifdef FONT_5x8
+    case FONT_5x8:
+	font = (uint8_t *) &font_5x8[0];
+	font_width = 5;
+	font_height = 8;
+	break;
+#endif
+#ifdef FONT_5x7W
+    case FONT_5x7W:
+	font = (uint8_t *) &font_5x7w[0];
+	font_width = 5;
+	font_height = 8;
+	break;
+#endif
+#ifdef FONT_6x10
+    case FONT_6x10:
+	wfont = (prog_uint16_t *) &font_6x10[0];
+	font_width = 6;
+	font_height = 10;
+	break;
+#endif
+#ifdef FONT_6x12
+    case FONT_6x12:
+	wfont = (prog_uint16_t *) &font_6x12[0];
+	font_width = 6;
+	font_height = 12;
+	break;
+#endif
+#ifdef FONT_6x13
+    case FONT_6x13:
+	wfont = (prog_uint16_t *) &font_6x13[0];
+	font_width = 6;
+	font_height = 13;
+	break;
+#endif
+#ifdef FONT_6x13B
+    case FONT_6x13B:
+	wfont = (prog_uint16_t *) &font_6x13B[0];
+	font_width = 6;
+	font_height = 13;
+	break;
+#endif
+#ifdef FONT_6x13O
+    case FONT_6x13O:
+	wfont = (prog_uint16_t *) &font_6x13O[0];
+	font_width = 6;
+	font_height = 13;
+	break;
+#endif
+#ifdef FONT_6x9
+    case FONT_6x9:
+	wfont = (prog_uint16_t *) &font_6x9[0];
+	font_width = 6;
+	font_height = 9;
+	break;
+#endif
+#ifdef FONT_7x13
+    case FONT_7x13:
+	wfont = (prog_uint16_t *) &font_7x13[0];
+	font_width = 7;
+	font_height = 13;
+	break;
+#endif
+#ifdef FONT_7x13B
+    case FONT_7x13B:
+	wfont = (prog_uint16_t *) &font_7x13B[0];
+	font_width = 7;
+	font_height = 13;
+	break;
+#endif
+#ifdef FONT_7x13O
+    case FONT_7x13O:
+	wfont = (prog_uint16_t *) &font_7x13O[0];
+	font_width = 7;
+	font_height = 13;
+	break;
+#endif
+#ifdef FONT_7x14
+    case FONT_7x14:
+	wfont = (prog_uint16_t *) &font_7x14[0];
+	font_width = 7;
+	font_height = 14;
+	break;
+#endif
+#ifdef FONT_7x14B
+    case FONT_7x14B:
+	wfont = (prog_uint16_t *) &font_7x14B[0];
+	font_width = 7;
+	font_height = 14;
+	break;
+#endif
+#ifdef FONT_8x8
+    case FONT_8x8:
+	font = (uint8_t *) &font_8x8[0];
+	font_width = 8;
+	font_height = 8;
+	break;
+#endif
+#ifdef FONT_8x13
+    case FONT_8x13:
+	wfont = (uint16_t *) &font_8x13[0];
+	font_width = 8;
+	font_height = 13;
+	break;
+#endif
+#ifdef FONT_8x13B
+    case FONT_8x13B:
+	wfont = (uint16_t *) &font_8x13B[0];
+	font_width = 8;
+	font_height = 13;
+	break;
+#endif
+#ifdef FONT_8x13O
+    case FONT_8x13O:
+	wfont = (uint16_t *) &font_8x13O[0];
+	font_width = 8;
+	font_height = 13;
+	break;
+#endif
+#ifdef FONT_9x15
+    case FONT_9x15:
+	wfont = (uint16_t *) &font_9x15[0];
+	font_width = 9;
+	font_height = 15;
+	break;
+#endif
+#ifdef FONT_9x15B
+    case FONT_9x15B:
+	wfont = (uint16_t *) &font_9x15b[0];
+	font_width = 9;
+	font_height = 15;
+	break;
+#endif
+#ifdef FONT_8x16
+    case FONT_8x16:
+	wfont = (uint16_t *) &font_8x16[0];
+	font_width = 8;
+	font_height = 16;
+	break;
+#endif
+#ifdef FONT_8x16B
+    case FONT_8x16B:
+	wfont = (uint16_t *) &font_8x16b[0];
+	font_width = 8;
+	font_height = 16;
+	break;
+#endif
+#ifdef FONT_8x13BK
+    case FONT_8x13BK:
+	wfont = (uint16_t *) &font_8x13bk[0];
+	font_width = 8;
+	font_height = 13;
+	break;
+#endif
+  }
+}
+
+// Copy a character glyph from the myfont data structure to
+// display memory, with its upper left at the given coordinate.
+void DisplayToolbox::drawChar(uint8_t x, uint8_t y, char c)
+{
+  uint16_t dots, msb;
+  char col, row;
+
+  if ((unsigned char) c >= 0xc0) c -= 0x41;
+  c -= 0x20;
+  msb = 1 << (font_height - 1);
+
+  // some math with pointers... don't try this at home ;-)
+  prog_uint8_t *addr = font + c * font_width;
+  prog_uint16_t *waddr = wfont + c * font_width;
+
+  for (col = 0; col < font_width; col++) {
+    dots = (font_height > 8) ? pgm_read_word_near(waddr + col) : pgm_read_byte_near(addr + col);
+    for (row = 0; row < font_height; row++) {
+      if (dots & (msb >> row))
+        setPixel(x+col, y+row, 1);
+      else 
+        setPixel(x+col, y+row, 0);
+      }
+    }
+}
+
+// Write out an entire string (Null terminated)
+uint8_t DisplayToolbox::drawString(int x, int y, char *text, uint8_t dir) {
+  uint8_t len = strlen(text);
+  uint8_t x_max = disp->getDisplayWidth() * disp->getDisplayCount();
+  //uint8_t y_max = disp->getDisplayHeight();
+  uint8_t glyph_width = font_width + 1;
+
+  if (dir == CENTER) {  // Note: CENTER ignores the x position and centers across the whole display board(s)
+    x = (x_max - glyph_width * len) / 2;
+  } else if(dir == RIGHT) {
+    x = (x_max - x - glyph_width * len);
+  }
+
+  for(char i=0; i< len; i++)
+	{
+		drawChar(x, y, text[i]);
+		x+=glyph_width; // Width of each glyph
+	}
+
 }

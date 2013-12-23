@@ -151,7 +151,6 @@ public:
 	// Set PWN brightness
 	void	setBrightness(uint8_t dispNum, uint8_t pwmValue);
 	
-	
 };
 
 #endif
