@@ -95,9 +95,9 @@ public:
 	void setBrightness(uint8_t pwmValue);
 	void drawRectangle(uint8_t _x, uint8_t _y, uint8_t width, uint8_t height, uint8_t colour, bool filled = false);
 	
-	void setFont(uint8_t userfont);
+	void setFont(uint8_t userfont);  // Default is FONT_5x7W
 	void drawChar(uint8_t x, uint8_t y, char c);
-	uint8_t drawString(int x, int y, char *text, uint8_t dir);
+	uint8_t drawString(int x, int y, char *text, uint8_t dir = 0);
 };
 
 #endif

@@ -35,6 +35,7 @@ setBrightness	KEYWORD2
 drawCircle	KEYWORD2
 drawLine	KEYWORD2
 drawRectangle	KEYWORD2
+drawString	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
