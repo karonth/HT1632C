@@ -391,7 +391,7 @@ uint8_t DisplayToolbox::drawString(int x, int y, char *text, uint8_t dir) {
   if (dir == CENTER) {  // Note: CENTER ignores the x position and centers across the whole display board(s)
     x = (x_max - glyph_width * len) / 2;
   } else if(dir == RIGHT) {
-    x = (x_max - x - glyph_width * len);
+    x = (x_max + 1 - x - glyph_width * len);
   }
 
   for(char i=0; i< len; i++)
