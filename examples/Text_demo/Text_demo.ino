@@ -6,12 +6,12 @@
 #define setSlave(dispNum, CSPin) initDisplay(dispNum,CSPin,false)
 
 // 3 = Number of displays
-// WR = 11
-// Data = 10
+// WR = 10
+// Data = 11
 // True - we dont need a shadow buffer for this example. False would save 50% memory!
 
 // Init Matrix
-MatrixDisplay disp(3,11,10, true);
+MatrixDisplay disp(3,10,11, true);
 // Pass a copy of the display into the toolbox
 DisplayToolbox toolbox(&disp);
 
