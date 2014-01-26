@@ -28,7 +28,9 @@
 #include <Arduino.h>
 #endif
 
+// https://github.com/projectgus/digitalIOPerformance
 #include <digitalIOPerformance.h>
+
 
 /*
 	All the various commands for HT1623C
