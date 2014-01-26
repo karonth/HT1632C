@@ -19,25 +19,6 @@
 */
 
 
-#if defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) // compiled as ATMega644
-//Atmega644 Version of fastWrite - for pins 0-15
-#define fWriteA(_pin_, _state_) ( _pin_ < 8 ? (_state_ ?  PORTB |= 1 << _pin_ : \
-PORTB &= ~(1 << _pin_ )) : (_state_ ?  PORTD |= 1 << (_pin_ -8) : PORTD &= ~(1 << (_pin_ -8)  )))
-
-//Atmega644 Version of fastWrite - for pins 16-31 (Note: PORTA mapping reversed from others)
-#define fWriteB(_pin_, _state_) ( _pin_ < 24 ? (_state_ ?  PORTC |= 1 << (_pin_ -16) : \
-PORTC &= ~(1 << (_pin_ -16))) : (_state_ ?  PORTA |= 1 << (31- _pin_) : PORTA &= ~(1 << (31- _pin_)  )))
-
-#else  // if ATMega328
-//Atmega328 Version of fastWrite - for pins 0-13
-#define fWriteA(_pin_, _state_) ( _pin_ < 8 ? (_state_ ?  PORTD |= 1 << _pin_ : \
-PORTD &= ~(1 << _pin_ )) : (_state_ ?  PORTB |= 1 << (_pin_ -8) : PORTB &= ~(1 << (_pin_ -8)  )))
-
-//Atmega328 Version of fastWrite - for pins 14-19
-#define fWriteB(_pin, _state_) (_state_ ?  PORTC |= 1 << (_pin - 14) : \
-PORTC &= ~(1 << (_pin -14) ))  
-#endif
-
 // Encode the Y coordinate to a bit #
 #define CalcBit(y) (1 << (y > 7 ? y -8 : y))
 
@@ -82,8 +63,8 @@ MatrixDisplay::MatrixDisplay(uint8_t numDisplays, uint8_t clkPin, uint8_t dataPi
     pinMode(dataPin, OUTPUT);
     pinMode(clkPin, OUTPUT);
     
-    bitBlast(dataPin, 1);
-    bitBlast(clkPin, 1);
+    digitalWrite(dataPin, 1);
+    digitalWrite(clkPin, 1);
 }
 
 // Destructor
@@ -118,7 +99,7 @@ void MatrixDisplay::initDisplay(uint8_t displayNum, uint8_t pin, bool master)
 	pDisplayPins[displayNum] = pin;
 	// init the hardware
 	pinMode(pin, OUTPUT);
-	bitBlast(pin, 1); // Disable chip (pull high)
+	digitalWrite(pin, 1); // Disable chip (pull high)
 	
 	selectDisplay(displayNum);
 	// Send Precommand
@@ -350,7 +331,7 @@ inline uint8_t MatrixDisplay::displayXYToIndex(uint8_t x, uint8_t y)
 inline void MatrixDisplay::selectDisplay(uint8_t displayNum)
 {
 //	Serial.println(pDisplayPins[displayNum],DEC);
-    bitBlast(pDisplayPins[displayNum], 0);
+    digitalWrite(pDisplayPins[displayNum], 0);
 	//digitalWrite(5,0); 
 }
 
@@ -358,7 +339,7 @@ inline void MatrixDisplay::releaseDisplay(uint8_t displayNum)
 
 {
 //	Serial.println(pDisplayPins[displayNum],DEC);
-    bitBlast(pDisplayPins[displayNum], 1);
+    digitalWrite(pDisplayPins[displayNum], 1);
 	//digitalWrite(5,1); 
 }
 
@@ -366,11 +347,11 @@ inline void MatrixDisplay::releaseDisplay(uint8_t displayNum)
 void MatrixDisplay::writeCommand(uint8_t displayNum, uint8_t command)
 {
     selectDisplay(displayNum);
-    bitBlast(dataPin, 1);
+    digitalWrite(dataPin, 1);
     writeDataBE(3, HT1632_ID_CMD); // Write out MSB [3 bits]
     writeDataBE(8, command); // Then MSB [7 8 bits]
     writeDataBE(1, 0); // 1 bit extra 
-    bitBlast(dataPin, 0);
+    digitalWrite(dataPin, 0);
     releaseDisplay(displayNum);
 }
 
@@ -382,9 +363,9 @@ void MatrixDisplay::writeDataLE(int8_t bitCount, uint8_t data)
     // assumes correct display is selected
     for(int8_t i = 0; i < bitCount; ++i)
     {
-        bitBlast(clkPin, 0);
-        bitBlast(dataPin, (data >> i) & 1);
-        bitBlast(clkPin, 1);
+        digitalWrite(clkPin, 0);
+        digitalWrite(dataPin, (data >> i) & 1);
+        digitalWrite(clkPin, 1);
     }
 }
 
@@ -396,17 +377,17 @@ void MatrixDisplay::writeDataBE(int8_t bitCount, uint8_t data, bool useNop)
     // assumes correct display is selected
     for(int8_t i = bitCount - 1; i >= 0; --i)
     {
-        bitBlast(clkPin, 0);
-        bitBlast(dataPin, (data >> i) & 1);
-        bitBlast(clkPin, 1);
+        digitalWrite(clkPin, 0);
+        digitalWrite(dataPin, (data >> i) & 1);
+        digitalWrite(clkPin, 1);
     }
 	
 	if(useNop)
 	{
-		bitBlast(clkPin, 0);				//clk = 0 for data ready
+		digitalWrite(clkPin, 0);				//clk = 0 for data ready
 		_nop();
 		_nop();
-		bitBlast(clkPin, 1);				//clk = 1 for data write into 1632
+		digitalWrite(clkPin, 1);				//clk = 1 for data write into 1632
 	}
 }
 
@@ -415,42 +396,29 @@ void MatrixDisplay::writeDataBE(int8_t bitCount, uint8_t data, bool useNop)
 void MatrixDisplay::preCommand()
 {
    
-	bitBlast(clkPin, 0);
-    bitBlast(dataPin, 1);
+	digitalWrite(clkPin, 0);
+    digitalWrite(dataPin, 1);
 	_nop();
 	
-	bitBlast(clkPin, 1);
-	_nop();
-	_nop();
-	
-	bitBlast(clkPin, 0);
-    bitBlast(dataPin, 0);
-	_nop();
-	
-	bitBlast(clkPin, 1);
+	digitalWrite(clkPin, 1);
 	_nop();
 	_nop();
 	
-	bitBlast(clkPin, 0);
-    bitBlast(dataPin, 0);
+	digitalWrite(clkPin, 0);
+    digitalWrite(dataPin, 0);
 	_nop();
 	
-	bitBlast(clkPin, 1);
+	digitalWrite(clkPin, 1);
 	_nop();
 	_nop();
-}
-
-void MatrixDisplay::bitBlast(uint8_t pin, uint8_t data)
-{
-    // TODO: Only supports 328
-    if(pin < 14)
-    {
-        fWriteA(pin, data);
-    }
-    else
-    {
-        fWriteB(pin, data);
-    }
+	
+	digitalWrite(clkPin, 0);
+    digitalWrite(dataPin, 0);
+	_nop();
+	
+	digitalWrite(clkPin, 1);
+	_nop();
+	_nop();
 }
 
 

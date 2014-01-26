@@ -28,6 +28,7 @@
 #include <Arduino.h>
 #endif
 
+#include <digitalIOPerformance.h>
 
 /*
 	All the various commands for HT1623C
@@ -89,9 +90,6 @@ private:
 	// Write command to write
     void    writeCommand(uint8_t displayNum, uint8_t command);
 
-	// High speed write to write (AtMega328 only)
-    void    bitBlast(uint8_t pin, uint8_t data);
-	
 	// Debug, write a byte to serial
 	void	dumpByte(uint8_t byte);
 	
