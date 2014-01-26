@@ -39,10 +39,11 @@ Various code has been shamelessly pinched from around the web, credit added wher
 
 // Font definitions  width x height
 // Those commented out are too large for an 8x32 display.
+//#define FONT_4x5     24  // Note: only support caps
 #define FONT_4x6     1
 #define FONT_5x7     2
 #define FONT_5x8     3
-#define FONT_5x7W    4
+#define FONT_5x7W    4	// Default Font
 //#define FONT_6x10    5
 //#define FONT_6x12    6
 //#define FONT_6x13    7

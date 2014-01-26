@@ -184,6 +184,13 @@ void DisplayToolbox::setFont(uint8_t userfont)
 {
   switch(userfont) {
 
+#ifdef FONT_4x5
+    case FONT_4x5:
+	font = (uint8_t *) &font_4x5[0];
+	font_width = 4;
+	font_height = 5;
+	break;
+#endif
 #ifdef FONT_4x6
     case FONT_4x6:
 	font = (uint8_t *) &font_4x6[0];
